@@ -3,5 +3,7 @@
   "main": "loader.js",
   "version": "1.0.0",
   "author": "JABUCO",
-  "license": "MIT"
+  "license": "MIT",
+  "private": false,
+  "gitHead": "163244c4a50ff066217f88a45bc7f0451c5068e3"
 }
