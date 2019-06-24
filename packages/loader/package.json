@@ -5,5 +5,8 @@
   "author": "JABUCO",
   "license": "MIT",
   "private": false,
-  "gitHead": "163244c4a50ff066217f88a45bc7f0451c5068e3"
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "15861834634bcf2353cab9010372cddb916a46b0"
 }
