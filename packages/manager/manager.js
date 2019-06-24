@@ -1,4 +1,9 @@
 const use = require("use-plugin");
+const ManagerError = (message, name = "ERROR") => {
+  const err = new Error();
+  err.message = message;
+  err.name = name;
+};
 
 class Manager {
   constructor(pluginPath = "", api, autoInit = true) {
@@ -21,8 +26,9 @@ class Manager {
           };
           return this[endpoint].call(pluginApi, ...args);
         } else {
-          throw new Error(
-            `application api does not expose enpoint ${endpoint}`
+          throw ManagerError(
+            `application api does not expose enpoint ${endpoint}`,
+            "ERRNOEXPOINT"
           );
         }
       }
@@ -107,8 +113,9 @@ class Manager {
           };
           return api[endpoint].call(pluginApi, ...args);
         } else {
-          throw new Error(
-            `plugin ${descriptor.name} does not expose enpoint ${endpoint}`
+          throw ManagerError(
+            `plugin ${descriptor.name} does not expose enpoint ${endpoint}`,
+            "ERRNOEXPOINT"
           );
         }
       }
@@ -132,7 +139,7 @@ Manager.module = module;
 class ManagerApplication {
   constructor(pluginPath) {
     if (!pluginPath) {
-      throw new Error("pluginPath is not defined");
+      throw ManagerError("pluginPath is not defined", "ERRNOEXPATH");
     }
     const that = this;
     this.api = {
