@@ -3,6 +3,7 @@ const ManagerError = (message, name = "ERROR") => {
   const err = new Error();
   err.message = message;
   err.name = name;
+  return err;
 };
 
 class Manager {
