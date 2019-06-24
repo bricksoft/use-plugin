@@ -1,0 +1,7 @@
+{
+  "name": "@jabuco/use-loader",
+  "main": "loader.js",
+  "version": "1.0.0",
+  "author": "JABUCO",
+  "license": "MIT"
+}

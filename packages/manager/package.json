@@ -1,0 +1,10 @@
+{
+  "name": "@jabuco/use-manager",
+  "main": "manager.js",
+  "version": "1.0.0",
+  "author": "JABUCO",
+  "license": "MIT",
+  "dependencies": {
+    "use-plugin": "^5.0.0"
+  }
+}
