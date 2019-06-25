@@ -150,8 +150,8 @@ class ManagerApplication {
       call(endpoint, ...args) {},
 
       // application api
-      loadPlugin: this.loadPlugin.bind(that),
-      unloadPlugin: this.unloadPlugin.bind(that)
+      loadPlugin: that.loadPlugin.bind(that),
+      unloadPlugin: that.unloadPlugin.bind(that)
     };
     // init api with plugins
     this.host = new Manager(pluginPath, this.api);
