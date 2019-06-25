@@ -168,8 +168,7 @@ class ManagerApplication {
 ManagerApplication.setLogger = logger => {
   if (logger) {
     Manager.logger = logger;
-  }
-  throw ManagerError("logger is undefined!", "ERRNOLOGGERARG");
+  } else throw ManagerError("logger is undefined!", "ERRNOLOGGERARG");
 };
 
 module.exports = Manager;
