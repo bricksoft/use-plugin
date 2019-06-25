@@ -171,6 +171,12 @@ ManagerApplication.setLogger = logger => {
   } else throw ManagerError("logger is undefined!", "ERRNOLOGGERARG");
 };
 
+ManagerApplication.setModule = module => {
+  if (module) {
+    Manager.module = module;
+  } else throw ManagerError("module is undefined!", "ERRNOMODULERARG");
+};
+
 module.exports = Manager;
 module.exports.Manager = Manager;
 module.exports.ManagerApplication = ManagerApplication;
