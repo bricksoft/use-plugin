@@ -52,7 +52,7 @@ class Manager {
           call: plugin.call
         };
       } catch (error) {
-        console.log(
+        Manager.logger.error(
           "plugin init failed! [%s]",
           (descriptor && descriptor.name) || id,
           error
@@ -60,7 +60,7 @@ class Manager {
         return false;
       }
     } catch (error) {
-      console.log(
+      Manager.logger.error(
         "plugin init failed! [%s]",
         (descriptor && descriptor.name) || id,
         error
@@ -86,7 +86,7 @@ class Manager {
         };
         load.call(api, descriptor.options || {});
       } catch (error) {
-        console.log(error);
+        Manager.logger.error(error);
         loadSuccess = false;
       }
     }
@@ -127,7 +127,7 @@ class Manager {
       try {
         this.plugins[id].unload();
       } catch (error) {
-        console.log("[manager] plugin unload failed! [%s]", id, error);
+        Manager.logger.error("[manager] plugin unload failed! [%s]", id, error);
         return false;
       }
       return true;
@@ -136,6 +136,7 @@ class Manager {
   }
 }
 Manager.module = module;
+Manager.logger = console;
 
 class ManagerApplication {
   constructor(pluginPath) {
@@ -164,6 +165,12 @@ class ManagerApplication {
     return this.host.unload(plugin);
   }
 }
+ManagerApplication.setLogger = logger => {
+  if (logger) {
+    Manager.logger = logger;
+  }
+  throw ManagerError("logger is undefined!", "ERRNOLOGGERARG");
+};
 
 module.exports = Manager;
 module.exports.Manager = Manager;
