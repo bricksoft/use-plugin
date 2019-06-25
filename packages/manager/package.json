@@ -1,7 +1,7 @@
 {
   "name": "@jabuco/use-manager",
   "main": "manager.js",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "author": "JABUCO",
   "license": "MIT",
   "private": false,
