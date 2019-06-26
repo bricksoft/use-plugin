@@ -44,6 +44,8 @@ class Manager {
   load(id, args = {}, autoInit = this.autoInit) {
     // check if plugin is cached and try to load it
     if (!this.cache[id]) {
+      // plugin is not yet cached
+      Manager.logger.debug("trying to load uncached plugin %s", id);
       let descriptor;
       try {
         try {
@@ -74,6 +76,7 @@ class Manager {
       }
     } else {
       // plugin is in cache load it from there
+      Manager.logger.debug("trying to load cached plugin %s", id);
       try {
         const descriptor = this.cache[id].descriptor;
         // even if plugin is cached run initialization
