@@ -15,6 +15,7 @@ class Manager {
     });
     this.autoInit = autoInit;
     this.plugins = {};
+    this.cache = {};
     const that = this;
     const _api = {
       contributed: {},
@@ -41,11 +42,43 @@ class Manager {
     this.api.call = _api.call;
   }
   load(id, args = {}, autoInit = this.autoInit) {
-    let descriptor;
-    try {
+    // check if plugin is cached and try to load it
+    if (!this.cache[id]) {
+      let descriptor;
       try {
-        descriptor = this.loader(id, args, () => {});
-        const plugin = this._load(descriptor, autoInit);
+        try {
+          descriptor = this.loader(id, args, () => {});
+          const plugin = this._load(descriptor, autoInit);
+          this.plugins[descriptor.name] = plugin;
+          // add plugin to cache
+          this.cache[descriptor.name] = plugin;
+          this.api.contributed[descriptor.name] = {
+            api: plugin.api,
+            call: plugin.call
+          };
+        } catch (error) {
+          Manager.logger.error(
+            "plugin init failed! [%s]",
+            (descriptor && descriptor.name) || id,
+            error
+          );
+          return false;
+        }
+      } catch (error) {
+        Manager.logger.error(
+          "plugin init failed! [%s]",
+          (descriptor && descriptor.name) || id,
+          error
+        );
+        return false;
+      }
+    } else {
+      // plugin is in cache load it from there
+      try {
+        const descriptor = this.cache[id].descriptor;
+        // even if plugin is cached run initialization
+        // to avoid unitialized plugins caused by unload calls
+        const plugin = this._load(descriptor, true);
         this.plugins[descriptor.name] = plugin;
         this.api.contributed[descriptor.name] = {
           api: plugin.api,
@@ -59,13 +92,6 @@ class Manager {
         );
         return false;
       }
-    } catch (error) {
-      Manager.logger.error(
-        "plugin init failed! [%s]",
-        (descriptor && descriptor.name) || id,
-        error
-      );
-      return false;
     }
 
     return true;
@@ -125,7 +151,11 @@ class Manager {
   unload(id) {
     if (this.plugins[id]) {
       try {
+        // call unload on plugin instance
         this.plugins[id].unload();
+        // delete api references
+        delete this.plugins[id];
+        delete this.api.contributed[id];
       } catch (error) {
         Manager.logger.error("[manager] plugin unload failed! [%s]", id, error);
         return false;
