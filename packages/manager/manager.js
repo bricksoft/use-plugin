@@ -41,15 +41,19 @@ class Manager {
     this.api.contributed = _api.contributed;
     this.api.call = _api.call;
   }
-  load(id, args = {}, autoInit = this.autoInit) {
+  check(id) {
+    return this.load(id, undefined, false, true);
+  }
+  load(id, args = {}, autoInit = this.autoInit, check = false) {
     // check if plugin is cached and try to load it
     if (!this.cache[id]) {
       // plugin is not yet cached
-      Manager.logger.debug("trying to load uncached plugin %s", id);
+      if (!check) Manager.logger.debug("trying to load uncached plugin %s", id);
       let descriptor;
       try {
         try {
           descriptor = this.loader(id, args, () => {});
+          if (check) return true;
           const plugin = this._load(descriptor, autoInit);
           this.plugins[descriptor.name] = plugin;
           // add plugin to cache
@@ -59,11 +63,13 @@ class Manager {
             call: plugin.call
           };
         } catch (error) {
-          Manager.logger.error(
-            "plugin init failed! [%s]",
-            (descriptor && descriptor.name) || id,
-            error
-          );
+          if (!check) {
+            Manager.logger.error(
+              "plugin init failed! [%s]",
+              (descriptor && descriptor.name) || id,
+              error
+            );
+          }
           return false;
         }
       } catch (error) {
@@ -76,7 +82,7 @@ class Manager {
       }
     } else {
       // plugin is in cache load it from there
-      Manager.logger.debug("trying to load cached plugin %s", id);
+      if (!check) Manager.logger.debug("trying to load cached plugin %s", id);
       try {
         const descriptor = this.cache[id].descriptor;
         // even if plugin is cached run initialization
@@ -88,11 +94,13 @@ class Manager {
           call: plugin.call
         };
       } catch (error) {
-        Manager.logger.error(
-          "plugin init failed! [%s]",
-          (descriptor && descriptor.name) || id,
-          error
-        );
+        if (!check) {
+          Manager.logger.error(
+            "plugin init failed! [%s]",
+            (descriptor && descriptor.name) || id,
+            error
+          );
+        }
         return false;
       }
     }
@@ -184,7 +192,8 @@ class ManagerApplication {
 
       // application api
       loadPlugin: that.loadPlugin.bind(that),
-      unloadPlugin: that.unloadPlugin.bind(that)
+      unloadPlugin: that.unloadPlugin.bind(that),
+      checkPlugin: that.checkPlugin.bind(that)
     };
     // init api with plugins
     this.host = new Manager(pluginPath, this.api);
@@ -196,6 +205,9 @@ class ManagerApplication {
   }
   unloadPlugin(plugin) {
     return this.host.unload(plugin);
+  }
+  checkPlugin(plugin) {
+    return this.host.check(plugin);
   }
 }
 ManagerApplication.setLogger = logger => {
